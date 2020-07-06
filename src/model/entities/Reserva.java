@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainException;
+
 public class Reserva {
 
 	private Integer numeroQuarto;
@@ -18,8 +20,13 @@ public class Reserva {
 	}
 
 
-	public Reserva(Integer numeroQuarto, Date entrada, Date saida) {
-	
+	public Reserva(Integer numeroQuarto, Date entrada, Date saida) throws DomainException {
+		if (!saida.after(entrada)) {
+			throw new DomainException("Erro na reserva, saida anterior a data de entrada");
+			
+		}
+		
+		
 		this.numeroQuarto = numeroQuarto;
 		this.entrada = entrada;
 		this.saida = saida;
@@ -53,21 +60,21 @@ public class Reserva {
 		return TimeUnit.DAYS.convert(diferenca, TimeUnit.MILLISECONDS);
 	}
 	
-	public String atualizarDatas(Date entrada, Date saida) {
+	public void atualizarDatas(Date entrada, Date saida) throws DomainException{
 		
 		Date agora = new Date();
 		if (entrada.before(agora) || saida.before(agora)) {
-			return "ERRO!!!  A reserva só pode ser atualizada para datas futuras.";
+			throw new DomainException("ERRO!!!  A reserva só pode ser atualizada para datas futuras.");
 			
 		}
 		
 		if (!saida.after(entrada)) {
-			return "Erro na reserva, saida posterior a data de entrada";
+			throw new DomainException("Erro na reserva, saida anterior a data de entrada");
 			
 		}
 		this.entrada = entrada;
 		this.saida = saida;
-		return null;
+		
 	}
 
 
